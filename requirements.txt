@@ -173,7 +173,7 @@ rosdistro-modules==1.0.1
 rospkg-modules==1.6.0
 SciPy==1.11.4
 screen-resolution-extra==0.0.0
-setuptools==68.1.2
+setuptools==78.1.1
 simple-pid==2.0.1
 six==1.16.0
 snowballstemmer==2.2.0
