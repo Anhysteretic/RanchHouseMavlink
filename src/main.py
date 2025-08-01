@@ -16,7 +16,7 @@ line_viewer = None
 async def run():
     drone = System()
     # await drone.connect(system_address="udpin://0.0.0.0:14551")
-    await drone.connect(system_address="serial:///dev/ttyAMA0:57600")
+    await drone.connect(system_address="serial:///dev/ttyAMA0:921600")
 
     print("Waiting for drone to connect...")
     async for state in drone.core.connection_state():
@@ -30,35 +30,35 @@ async def run():
     #         print("-- Global position estimate OK")
     #         break
 
-    print("-- Arming")
-    await drone.action.arm()
+    #print("-- Arming")
+    #await drone.action.arm()
 
-    await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-    print("-- Starting offboard")
-    try:
-        await drone.offboard.start()
-    except OffboardError as error:
-        print(f"Starting offboard mode failed with error code: {error._result.result}")
-        print("-- Disarming")
-        await drone.action.disarm()
-        return
+    #await drone.offboard.set_velocity_body(VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+    #print("-- Starting offboard")
+    #try:
+    #    await drone.offboard.start()
+    #except OffboardError as error:
+    #    print(f"Starting offboard mode failed with error code: {error._result.result}")
+    #    print("-- Disarming")
+    #    await drone.action.disarm()
+    #    return
     
-    print("-- Setting initial setpoint")
-    await drone.offboard.set_velocity_body(
-        VelocityBodyYawspeed(0.0, 0.0, -0.5, 0.0))
-    await asyncio.sleep(7.5)
+    #print("-- Setting initial setpoint")
+    #await drone.offboard.set_velocity_body(
+    #    VelocityBodyYawspeed(0.0, 0.0, -0.5, 0.0))
+    #await asyncio.sleep(7.5)
 
-    print("-- Wait for a bit")
-    await drone.offboard.set_velocity_body(
-        VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(2)
+    #print("-- Wait for a bit")
+    #await drone.offboard.set_velocity_body(
+    #    VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
+    #await asyncio.sleep(2)
 
     print("--starting manual control")
     while True:
         goal = tracker.getLatestControl()
         print(goal)
         await drone.offboard.set_velocity_body(goal)
-        await asyncio.sleep(5)
+        await asyncio.sleep(0.1)
 
 if __name__ == '__main__':
     detector = Detector()
