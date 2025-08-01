@@ -12,7 +12,7 @@ fps = 30            # Frames per second
 codec = cv.VideoWriter_fourcc(*'MJPG') # Codec for MJPEG video
 
 class Detector():
-    def __init__(self, sender_ip):        
+    def __init__(self):        
         self.latest_image = None
         self.latest_results = np.array([[0, 0, 0, 0], [0, 0, 0, 0]])
         self.thread_lock = threading.Lock()
@@ -20,15 +20,15 @@ class Detector():
         self.running = False
         self.videoThread = None
 
-        cap = cv.VideoCapture(camera_device_path)
-        if not cap.isOpened():
+        self.cap = cv.VideoCapture(camera_device_path)
+        if not self.cap.isOpened():
             print(f"Error: Could not open video device {camera_device_path}")
             exit()
 
-        cap.set(cv.CAP_PROP_FOURCC, codec)
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, frame_width)
-        cap.set(cv.CAP_PROP_FRAME_HEIGHT, frame_height)
-        cap.set(cv.CAP_PROP_FPS, fps)                
+        self.cap.set(cv.CAP_PROP_FOURCC, codec)
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, frame_width)
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, frame_height)
+        self.cap.set(cv.CAP_PROP_FPS, fps)                
         
     def startVideoThread(self):
         self.running = True

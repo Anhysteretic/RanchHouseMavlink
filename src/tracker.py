@@ -57,13 +57,16 @@ class Tracker():
         while self.running:            
             local_detector_result = self._detector.getLatestResult()
 
-            if local_detector_result is None: return 
+            if local_detector_result is None: continue 
 
-            line1_p1 = np.array([local_detector_result[0][0], local_detector_result[0][1]])
-            line1_p2 = np.array([local_detector_result[0][2], local_detector_result[0][3]])
-            
-            line2_p1 = np.array([local_detector_result[1][0], local_detector_result[1][1]])
-            line2_p2 = np.array([local_detector_result[1][2], local_detector_result[1][3]])
+            try:
+                line1_p1 = np.array([local_detector_result[0][0], local_detector_result[0][1]])
+                line1_p2 = np.array([local_detector_result[0][2], local_detector_result[0][3]])
+                
+                line2_p1 = np.array([local_detector_result[1][0], local_detector_result[1][1]])
+                line2_p2 = np.array([local_detector_result[1][2], local_detector_result[1][3]])
+            except Exception:
+                continue
             
             seg1_p1, seg1_p2 = self.truncateLine(line1_p1, line1_p2)
             seg2_p1, seg2_p2 = self.truncateLine(line2_p1, line2_p2)
