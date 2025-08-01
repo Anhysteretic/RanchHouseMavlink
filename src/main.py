@@ -20,11 +20,11 @@ async def run():
             print(f"-- Connected to drone!")
             break
     
-    # print("Waiting for drone to have a global position estimate...")
-    # async for health in drone.telemetry.health():
-    #     if health.is_global_position_ok and health.is_home_position_ok:
-    #         print("-- Global position estimate OK")
-    #         break
+    print("Waiting for drone to have a global position estimate...")
+    async for health in drone.telemetry.health():
+        if health.is_global_position_ok and health.is_home_position_ok:
+            print("-- Global position estimate OK")
+            break
 
     print("-- Arming")
     await drone.action.arm()
@@ -34,20 +34,20 @@ async def run():
     try:
         await drone.offboard.start()
     except OffboardError as error:
-        print(f"Starting offboard mode failed with error code: \
-              {error._result.result}")
+        print(f"Starting offboard mode failed with error code: {error._result.result}")
         print("-- Disarming")
         await drone.action.disarm()
         return
     
     print("-- Setting initial setpoint")
     await drone.offboard.set_velocity_body(
-        VelocityBodyYawspeed(0.0, 0.0, -0.55, 0.0))
-    await asyncio.sleep(10)
+        VelocityBodyYawspeed(0.0, 0.0, -0.5, 0.0))
+    await asyncio.sleep(7.5)
 
+    print("-- Wait for a bit")
     await drone.offboard.set_velocity_body(
         VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
-    await asyncio.sleep(5)
+    await asyncio.sleep(2)
     
     while True:
         goal = Tracker.getLatestControl()

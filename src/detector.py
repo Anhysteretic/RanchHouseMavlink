@@ -5,6 +5,12 @@ import threading
 import time
 import sys
 
+camera_device_path = '/dev/video0'
+frame_width = 1280  # Width of the frame
+frame_height = 720  # Height of the frame
+fps = 30            # Frames per second
+codec = cv.VideoWriter_fourcc(*'MJPG') # Codec for MJPEG video
+
 class Detector():
     def __init__(self, sender_ip):        
         self.latest_image = None
@@ -13,16 +19,16 @@ class Detector():
         
         self.running = False
         self.videoThread = None
-        
-        self.sender_ip = sender_ip
-                
-        print("Connecting to GStreamer pipeline...")
-        self.cap = cv.VideoCapture(self.gstreamer_pipeline(), cv.CAP_GSTREAMER)
-        if not self.cap.isOpened():
-            print("Failed to open GStreamer pipeline.")
-            print(f"Please ensure the sender script is running on {self.sender_ip} and broadcasting on port 5000.")
+
+        cap = cv.VideoCapture(camera_device_path)
+        if not cap.isOpened():
+            print(f"Error: Could not open video device {camera_device_path}")
             exit()
-        print("Successfully connected to GStreamer pipeline.")
+
+        cap.set(cv.CAP_PROP_FOURCC, codec)
+        cap.set(cv.CAP_PROP_FRAME_WIDTH, frame_width)
+        cap.set(cv.CAP_PROP_FRAME_HEIGHT, frame_height)
+        cap.set(cv.CAP_PROP_FPS, fps)                
         
     def startVideoThread(self):
         self.running = True
@@ -33,19 +39,6 @@ class Detector():
         self.running = False
         if self.videoThread:
             self.videoThread.join()
-        
-    def gstreamer_pipeline(self):
-        """
-        Defines the GStreamer pipeline for receiving an H.264 stream over TCP.
-        """
-        return (
-            f"tcpclientsrc host={self.sender_ip} port=5000 ! "
-            "tsdemux ! "
-            "h264parse ! "
-            "avdec_h264 ! "
-            "videoconvert ! "
-            "appsink"
-        )
     
     def _videoLoop(self):
         print("Video loop started.")
@@ -141,30 +134,3 @@ class Detector():
         filtered = cv.bitwise_and(grayscale, grayscale, mask=mask)
         dst = cv.Canny(filtered, 50, 150, None, apertureSize=7)
         return cv.HoughLinesP(dst, 1, np.pi / 180, 50, None, 100, 10)
-
-if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("Usage: python3 this_script.py <SENDER_IP_ADDRESS>")
-        sys.exit(1)
-
-    sender_ip_address = sys.argv[1]
-
-    detector = Detector(sender_ip=sender_ip_address)
-    detector.startVideoThread()
-
-    try:
-        while True:
-            frame = detector.getLatestImage()
-            if frame is not None:
-                cv.imshow("MAV Ranch House - Drone Video Feed", frame)
-            if cv.waitKey(1) & 0xFF == ord('q'):
-                break
-            if not detector.running:
-                print("Video thread has stopped. Exiting.")
-                break
-            time.sleep(0.01)
-
-    finally:
-        print("Shutting down...")
-        detector.stopVideoThread()
-        cv.destroyAllWindows()
