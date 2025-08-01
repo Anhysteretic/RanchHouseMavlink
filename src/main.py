@@ -4,11 +4,14 @@ from mavsdk import System
 from mavsdk.offboard import (OffboardError, VelocityBodyYawspeed)
 from detector import Detector
 from tracker import Tracker
+from line_viewer import LineViewer
 import time
+import threading
 
 detector = None
 tracker = None
 drone = None
+line_viewer = None
 
 async def run():
     drone = System()
@@ -62,4 +65,12 @@ if __name__ == '__main__':
     detector.startVideoThread()
     tracker = Tracker(detector)
     tracker.startTrackerThread()
+    
+    # Start line viewer in a separate thread (optional - comment out if not needed)
+    line_viewer = LineViewer()
+    line_viewer.detector = detector  # Share the same detector instance
+    viewer_thread = threading.Thread(target=line_viewer.start, daemon=True)
+    viewer_thread.start()
+    
+    # Run the main drone control loop
     asyncio.run(run())
