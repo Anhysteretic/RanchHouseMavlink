@@ -49,9 +49,11 @@ async def run():
     await drone.offboard.set_velocity_body(
         VelocityBodyYawspeed(0.0, 0.0, 0.0, 0.0))
     await asyncio.sleep(2)
-    
+
+    print("--starting manual control")
     while True:
         goal = tracker.getLatestControl()
+        print(goal)
         await drone.offboard.set_velocity_body(goal)
         await asyncio.sleep(5)
 
