@@ -51,7 +51,7 @@ async def run():
     await asyncio.sleep(2)
     
     while True:
-        goal = Tracker.getLatestControl()
+        goal = tracker.getLatestControl()
         await drone.offboard.set_velocity_body(goal)
         await asyncio.sleep(5)
 
