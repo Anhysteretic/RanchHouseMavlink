@@ -45,12 +45,11 @@ class Detector():
         while self.running:
             ret, frame = self.cap.read()
             if not ret:
-                print("Failed to grab frame from stream. Receiver might have disconnected.")
-                self.running = False
-                break
+                continue
               
             hough_lines = self.get_HoughsLinesP(frame)
             results = self.consolidate_into_two_lines_filtered(hough_lines)
+            print(results)
             
             frame_with_lines = self.draw_lines_on_frame(frame, results)
             
