@@ -10,8 +10,8 @@ from simple_pid import PID
 import time
 
 IMAGE_HEIGHT, IMAGE_WIDTH = 720, 1280
-y_cut = IMAGE_HEIGHT/3
-_MAX_CLIMB, _MAX_SPEED, _MAX_YAWSPEED = 0.5, 0.5, 0.5
+y_cut = IMAGE_HEIGHT/2
+_MAX_CLIMB, _MAX_SPEED, _MAX_YAWSPEED = 0.5, 0.5, 10
 CENTER = np.array([IMAGE_WIDTH//2, IMAGE_HEIGHT//2])
 fixed_distance = 100
 
@@ -26,15 +26,15 @@ class Tracker():
         self.trackerThread = None
         self.threading_lock = threading.Lock()
 
-        self.pid_x = PID(Kp=0.01, Ki=0.000, Kd=0.005, setpoint=0,
+        self.pid_x = PID(Kp=0.005, Ki=0.000, Kd=0, setpoint=0,
                          sample_time=0.1,
                          output_limits=(-_MAX_SPEED, _MAX_SPEED))
 
-        self.pid_y = PID(Kp=0.01, Ki=0.000, Kd=0.005, setpoint=0,
+        self.pid_y = PID(Kp=0.005, Ki=0.000, Kd=0, setpoint=0,
                          sample_time=0.1,
                          output_limits=(-_MAX_SPEED, _MAX_SPEED))
         
-        self.pid_yaw = PID(Kp=0.1, Ki=0.001, Kd=0.005, setpoint=0, 
+        self.pid_yaw = PID(Kp=0.01, Ki=0.00, Kd=0.0, setpoint=0, 
                             sample_time=0.1, output_limits=(-_MAX_YAWSPEED, _MAX_YAWSPEED))
         
         return
