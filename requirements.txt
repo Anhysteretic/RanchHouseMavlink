@@ -44,7 +44,7 @@ colcon-test-result==0.3.8
 colcon-zsh==0.5.0
 colorama==0.4.6
 command-not-found==0.3
-configobj==5.0.8
+configobj==5.0.9
 contourpy==1.0.7
 coverage==7.4.4
 cryptography==41.0.7
